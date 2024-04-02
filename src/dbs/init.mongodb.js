@@ -2,10 +2,11 @@
 
 "use strict";
 const mongoose = require("mongoose");
+const process = require("process");
 
-const connectString =
-  "mongodb+srv://cuongbn2011:Bv5J4LxDuiO21b9S@cluster0.haz4uii.mongodb.net/";
 
+const connectString = process.env.MONGODB_URL
+  
 class Database {
   constructor() {
     this.connect();

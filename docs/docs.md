@@ -33,10 +33,13 @@
         - Dựa vào CPU và memory mà đặt maxPoolSize cho hợp lý
 
 ## 4. Env và config
+
     1. Env
         - Vì sao phải sử dụng file .env : Giúp làm việc local mà ko ảnh hưởng đến dever khác
         - File env lưu trữ những thông tin nhẩy cảm, password, các biến môi trường, API....
         - File env sẽ ko được push lên github
     2. Config
-        - File config để lưu trữ các cài đặt và tùy chọn cho cấu hình 
+        - File config để lưu trữ các cài đặt và tùy chọn cho cấu hình
         - Kiểm soát các cài đặt ở file
+
+## 5. Create refeshTocken và
