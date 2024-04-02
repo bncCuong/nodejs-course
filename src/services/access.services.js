@@ -83,7 +83,7 @@ class AccessServices {
         console.log('Created Tokens Success::', tokens);
         return {
           code: 201,
-          metadate: {
+          metadata: {
             //neu muon lay 1 so thong tin thif dung getinfoData
             shop: getInfoData(['name', 'email', '_id'], newShop),
             tokens,
@@ -93,7 +93,7 @@ class AccessServices {
 
       return {
         code: 200,
-        metadate: null,
+        metadata: null,
       };
     } catch (error) {
       return {

@@ -11,7 +11,7 @@ const HEADER = {
 
 const apiKey = async (req, res, next) => {
   try {
-    const key = req.header[HEADER.API_KEY].toString(); // check xem header co' apikey hay khong
+    const key = req.headers[HEADER.API_KEY].toString(); // check xem header co' apikey hay khong
     if (!key) {
       return res.status(403).json({
         message: 'Forbidden error',
@@ -20,13 +20,16 @@ const apiKey = async (req, res, next) => {
 
     // check xem apikey co' ton tai trong database khong
     const objKey = await findById(key);
+
     if (!objKey) {
       return res.status(403).json({
         message: 'Forbidden error',
       }); // neu khong co thi tra ve loi
     }
     req.objKey = objKey;
-    next();
-  } catch (error) {}
+    return next();
+  } catch (error) {
+    console.log(error)
+  }
 };
-module.exports = apiKey;
+module.exports = {apiKey};

@@ -3,7 +3,7 @@
 'use strict';
 
 const express = require('express');
-const apiKey = require('../auth/checkAuth');
+const {apiKey} = require('../auth/checkAuth');
 const router = express.Router();
 
 //check apikey
