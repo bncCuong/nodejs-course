@@ -1,23 +1,23 @@
 /** @format */
 
-'use strict';
+"use strict";
 
-const shopModel = require('../models/shop.model');
+const shopModel = require("../models/shop.model");
 
 //library ma hoa password thanh ma hash
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 //library tao ra key
-const crypto = require('node:crypto');
-const KeyTokenService = require('./keyToken.service');
-const { createTokenPair } = require('../auth/authUtils');
-const { getInfoData } = require('../utils');
+const crypto = require("node:crypto");
+const KeyTokenService = require("./keyToken.service");
+const { createTokenPair } = require("../auth/authUtils");
+const { getInfoData } = require("../utils");
 
 const RoleShop = {
-  SHOP: 'SHOP',
-  WRITER: '0001',
-  EDITOR: 'EDITOR',
-  ADMIN: 'ADMIN',
+  SHOP: "SHOP",
+  WRITER: "0001",
+  EDITOR: "EDITOR",
+  ADMIN: "ADMIN",
 };
 
 class AccessServices {
@@ -27,8 +27,8 @@ class AccessServices {
       const holderShop = await shopModel.findOne({ email }).lean();
       if (holderShop) {
         return {
-          code: 'xxxx',
-          message: 'Shop already registered!',
+          code: "xxxx",
+          message: "Shop already registered!",
         };
       }
       //10 - do kho' cua thuat toan hash
@@ -57,8 +57,8 @@ class AccessServices {
         // });
         // console.log({ privateKey, publicKey });
 
-        const privateKey = crypto.randomBytes(64).toString('hex');
-        const publicKey = crypto.randomBytes(64).toString('hex');
+        const privateKey = crypto.randomBytes(64).toString("hex");
+        const publicKey = crypto.randomBytes(64).toString("hex");
 
         const keyStore = await KeyTokenService.createKeyToken({
           userId: newShop._id,
@@ -66,8 +66,8 @@ class AccessServices {
         });
         if (!keyStore) {
           return {
-            code: 'xxxx',
-            message: 'Error',
+            code: "xxxx",
+            message: "Error",
           };
         } //Neu tao key that bai thi send error ve
 
@@ -80,12 +80,12 @@ class AccessServices {
           publicKey,
           privateKey
         );
-        console.log('Created Tokens Success::', tokens);
+        console.log("Created Tokens Success::", tokens);
         return {
           code: 201,
           metadata: {
             //neu muon lay 1 so thong tin thif dung getinfoData
-            shop: getInfoData(['name', 'email', '_id'], newShop),
+            shop: getInfoData(["name", "email", "_id"], newShop),
             tokens,
           },
         };
@@ -97,7 +97,7 @@ class AccessServices {
       };
     } catch (error) {
       return {
-        code: 'xxx',
+        code: "xxx",
         message: error.message,
         status: error,
       };

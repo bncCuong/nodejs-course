@@ -3,3 +3,11 @@
 ### signup
 POST {{url_dev}}/shop/signup
 
+Content-Type: application/json
+x-api-key: 048158e9ec6b2e186d4bdf0d492740c7e6bc0d7cc30eb65016cb07d6ce56b9aff10c550f833da9a16675b0ab81d9ee03d52831e345b956e0f9ff76de5a6f3e25 
+
+{
+    "name": "shop1",
+    "email": "cuongbn@gmail.com",
+    "password": "123456",
+    }
