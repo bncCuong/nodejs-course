@@ -47,5 +47,12 @@ const checkPermission = (permission) => {
     console.log("Permission: ", req.objKey.permissions);
     return next();
   };
+}; // hàm check permission của user
+
+const asyncHanlder = (fn) => {
+  return (req, res, next) => {
+    fn(req, res, next).catch(next);
+  };
 };
-module.exports = { apiKey, checkPermission };
+
+module.exports = { apiKey, checkPermission, asyncHanlder };
