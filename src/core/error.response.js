@@ -46,4 +46,17 @@ class AuthFailureError extends ErrorResponse {
   }
 }
 
-module.exports = { BadRequestError, ConfligRequestError, AuthFailureError };
+class NotFound extends ErrorResponse {
+  constructor(
+    message = httpStatusCode.ReasonPhrases.NOT_FOUND,
+    statusCode = httpStatusCode.StatusCodes.NOT_FOUND
+  ) {
+    super(message, statusCode);
+  }
+}
+module.exports = {
+  BadRequestError,
+  ConfligRequestError,
+  AuthFailureError,
+  NotFound,
+};

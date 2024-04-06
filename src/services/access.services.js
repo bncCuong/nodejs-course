@@ -56,10 +56,7 @@ class AccessServices {
       // });
       // console.log({ privateKey, publicKey });
 
-      const { tokens, privateKey, publicKey } = await createToken(
-        newShop._id,
-        email
-      );
+      const { tokens, publicKey } = await createToken(newShop._id, email);
 
       const keyStore = await KeyTokenService.createKeyToken({
         userId: newShop._id,
@@ -124,9 +121,30 @@ class AccessServices {
       throw new AuthFailureError("Error: Authentication Error!");
     }
 
-    //step3: create token pair
+    //step3 + 4 : create token pair
+    const { tokens, publicKey, privateKey } = await createToken(
+      foundShop._id,
+      email
+    );
 
-    const { tokens } = await createToken(foundShop._id, email);
+    await KeyTokenService.createKeyToken({
+      refreshToken: publicKey,
+      userId: foundShop._id,
+      publicKey,
+      privateKey,
+    });
+    return {
+      metadata: {
+        shop: getInfoData(["name", "email", "_id"], foundShop),
+        tokens,
+      },
+    };
+  };
+
+  static logout = async (keyStore) => {
+    const delKey = await KeyTokenService.removeTokenById(keyStore.userId);
+    console.log(`::P::DelKey::`, delKey);
+    return delKey;
   };
 }
 
