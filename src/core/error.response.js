@@ -1,16 +1,16 @@
 /** @format */
 
-"use strict";
+'use strict';
 
-const { httpStatusCode } = require("../utils");
+const { httpStatusCode } = require('../utils');
 
 const _statusCode = {
   FORBIDDEN: 403,
   CONFLICT: 409,
 };
 const reasonStatusCode = {
-  FORBIDDEN: "Bad request error",
-  CONFLICT: "Conflict error",
+  FORBIDDEN: 'Bad request error',
+  CONFLICT: 'Conflict error',
 };
 class ErrorResponse extends Error {
   constructor(message, statusCode) {

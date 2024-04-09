@@ -1,24 +1,24 @@
 /** @format */
 
-"use strict";
+'use strict';
 
-const shopModel = require("../models/shop.model");
+const shopModel = require('../models/shop.model');
 
 //library ma hoa password thanh ma hash
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcrypt');
 
 //library tao ra key
-const KeyTokenService = require("./keyToken.service");
-const { createTokenPair } = require("../auth/authUtils");
-const { getInfoData, createToken } = require("../utils");
-const { BadRequestError, AuthFailureError } = require("../core/error.response");
-const findByEmail = require("./shop.service");
+const KeyTokenService = require('./keyToken.service');
+// const { createTokenPair } = require("../auth/authUtils");
+const { getInfoData, createToken } = require('../utils');
+const { BadRequestError, AuthFailureError } = require('../core/error.response');
+const findByEmail = require('./shop.service');
 
 const RoleShop = {
-  SHOP: "SHOP",
-  WRITER: "0001",
-  EDITOR: "EDITOR",
-  ADMIN: "ADMIN",
+  SHOP: 'SHOP',
+  WRITER: '0001',
+  EDITOR: 'EDITOR',
+  ADMIN: 'ADMIN',
 };
 
 class AccessServices {
@@ -28,7 +28,7 @@ class AccessServices {
     //step1: check email exists
     const holderShop = await shopModel.findOne({ email }).lean();
     if (holderShop) {
-      throw new BadRequestError("Error: Shop already registered!");
+      throw new BadRequestError('Error: Shop already registered!');
     }
     //10 - do kho' cua thuat toan hash
     const passwordHash = await bcrypt.hash(password, 10);
@@ -63,7 +63,7 @@ class AccessServices {
         publicKey,
       });
       if (!keyStore) {
-        throw new BadRequestError("Error: Shop already registered!");
+        throw new BadRequestError('Error: Shop already registered!');
       } //Neu tao key that bai thi send error ve
 
       //neu tao key thanh cong thi tao cap accessToken va refreshToken
@@ -76,12 +76,12 @@ class AccessServices {
       //   privateKey
       // );
 
-      console.log("Created Tokens Success::", tokens);
+      console.log('Created Tokens Success::', tokens);
       return {
         code: 201,
         metadata: {
           //neu muon lay 1 so thong tin thif dung getinfoData
-          shop: getInfoData(["name", "email", "_id"], newShop),
+          shop: getInfoData(['name', 'email', '_id'], newShop),
           tokens,
         },
       };
@@ -111,14 +111,14 @@ class AccessServices {
     //step1: check email exists
     const foundShop = await findByEmail({ email });
     if (!foundShop) {
-      throw new BadRequestError("Error: Shop not exists!");
+      throw new BadRequestError('Error: Shop not exists!');
     }
 
     //step2: check password
     const matchPassword = await bcrypt.compare(password, foundShop.password);
 
     if (!matchPassword) {
-      throw new AuthFailureError("Error: Authentication Error!");
+      throw new AuthFailureError('Error: Authentication Error!');
     }
 
     //step3 + 4 : create token pair
@@ -135,7 +135,7 @@ class AccessServices {
     });
     return {
       metadata: {
-        shop: getInfoData(["name", "email", "_id"], foundShop),
+        shop: getInfoData(['name', 'email', '_id'], foundShop),
         tokens,
       },
     };
