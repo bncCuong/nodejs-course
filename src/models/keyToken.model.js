@@ -1,11 +1,11 @@
 /** @format */
 
-"use strict";
+'use strict';
 
-const { Schema, model } = require("mongoose"); // Erase if already required
+const { Schema, model } = require('mongoose'); // Erase if already required
 
-const DOCUMENT_NAME = "Key";
-const COLLECTION_NAME = "Keys";
+const DOCUMENT_NAME = 'Key';
+const COLLECTION_NAME = 'Keys';
 
 // Declare the Schema of the Mongo model
 var keyTokenSchema = Schema(
@@ -13,7 +13,7 @@ var keyTokenSchema = Schema(
     user: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "SHOP",
+      ref: 'SHOP',
     },
     publicKey: {
       type: String,
@@ -27,7 +27,11 @@ var keyTokenSchema = Schema(
       type: String,
       required: true,
     },
-    refreshTockensUsed: {
+    accessToken: {
+      type: String,
+      required: true,
+    },
+    refreshTokensUsed: {
       type: Array,
       default: [], // RT da su dung
     },

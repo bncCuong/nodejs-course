@@ -40,7 +40,7 @@ class BadRequestError extends ErrorResponse {
 class AuthFailureError extends ErrorResponse {
   constructor(
     message = httpStatusCode.ReasonPhrases.UNAUTHORIZED,
-    statusCode = httpStatusCode.StatusCodes.UNAUTHORIZED
+    statusCode = httpStatusCode['StatusCodes'].UNAUTHORIZED
   ) {
     super(message, statusCode);
   }
@@ -54,9 +54,18 @@ class NotFound extends ErrorResponse {
     super(message, statusCode);
   }
 }
+class ForbiddenError extends ErrorResponse {
+  constructor(
+    message = httpStatusCode.ReasonPhrases.FORBIDDEN,
+    statusCode = httpStatusCode.StatusCodes.FORBIDDEN
+  ) {
+    super(message, statusCode);
+  }
+}
 module.exports = {
   BadRequestError,
   ConfligRequestError,
   AuthFailureError,
   NotFound,
+  ForbiddenError,
 };

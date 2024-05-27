@@ -8,11 +8,13 @@ const { Types } = require('mongoose');
 //crete token
 
 class KeyTokenService {
+  // hàm tạo token
   static createKeyToken = async ({
     userId,
     publicKey,
     privateKey,
     refreshToken,
+    accessToken,
   }) => {
     try {
       //convert to string for save database
@@ -24,6 +26,7 @@ class KeyTokenService {
       // return tokens ? tokens.publicKey : null;
       const filter = { user: userId };
       const update = {
+        accessToken,
         publicKey,
         privateKey,
         refreshTokensUsed: [],
@@ -42,12 +45,27 @@ class KeyTokenService {
     }
   };
 
+  //Xoá token khi logout
   static removeTokenById = async (userId) => {
-    return await keyTokenModel.remove(userId);
+    return await keyTokenModel.deleteOne(userId);
   };
 
   static findByUserId = async (userId) => {
     return await keyTokenModel.findOne({ user: userId }).lean();
+  };
+
+  static findRefreshTokenUsed = async (refreshToken) => {
+    return await keyTokenModel
+      .findOne({ refreshTokensUsed: refreshToken })
+      .lean();
+  };
+
+  static deleteRefreshTokenUsedById = async (userId) => {
+    return await keyTokenModel.deleteOne({ user: Types.ObjectId(userId) });
+  };
+
+  static findByRefreshToken = async (refreshToken) => {
+    return await keyTokenModel.findOne({ refreshToken });
   };
 }
 

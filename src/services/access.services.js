@@ -11,8 +11,14 @@ const bcrypt = require('bcrypt');
 const KeyTokenService = require('./keyToken.service');
 // const { createTokenPair } = require("../auth/authUtils");
 const { getInfoData, createToken } = require('../utils');
-const { BadRequestError, AuthFailureError } = require('../core/error.response');
+const {
+  BadRequestError,
+  AuthFailureError,
+  ForbiddenError,
+} = require('../core/error.response');
 const findByEmail = require('./shop.service');
+const { verifyJWT } = require('../auth/authUtils');
+const e = require('express');
 
 const RoleShop = {
   SHOP: 'SHOP',
@@ -22,6 +28,62 @@ const RoleShop = {
 };
 
 class AccessServices {
+  //handle refresh token
+  static refreshToken = async ({ refreshToken, user, keyStore }) => {
+    // const { userId, email } = user;
+
+    //step1: check refreshToken đã được sử dụng hay chưa. Check ở trong refreshTokensUsed
+    const refreshTokenUsed = await KeyTokenService.findRefreshTokenUsed(
+      refreshToken
+    );
+    if (refreshTokenUsed) {
+      //check xem refreshToken nay la cua user nao ?
+      const { userId, email } = await verifyJWT(
+        refreshToken,
+        refreshTokenUsed.privateKey
+      );
+      console.log(userId, 'userId');
+
+      await KeyTokenService.deleteRefreshTokenUsedById(userId);
+      throw new ForbiddenError('Error: Something went wrong. Pls relogin!!');
+    }
+
+    const holderToken = await KeyTokenService.findByRefreshToken(refreshToken);
+
+    if (!holderToken) {
+      throw new AuthFailureError('Error: Shop not registered!');
+    }
+
+    const { userId, email } = await verifyJWT(
+      refreshToken,
+      holderToken.publicKey
+    );
+    const foundShop = await findByEmail({ email });
+    if (!foundShop) {
+      throw new AuthFailureError('Error: Shop not registered!');
+    }
+    //neu tim thay thi tao lai cap token moi
+    const { tokens } = await createToken(
+      { userId, email },
+      holderToken.secretKey,
+      holderToken.publicKey
+    );
+
+    await holderToken.updateOne({
+      $set: {
+        refreshToken: tokens.refreshToken,
+      },
+      $addToSet: {
+        refreshTokensUsed: refreshToken,
+      },
+    });
+
+    return {
+      user: { userId, email },
+      tokens,
+    };
+  };
+
   // đăng ký tài khoản shop
   static signUp = async ({ name, email, password }) => {
     // try {
@@ -56,7 +118,7 @@ class AccessServices {
       // });
       // console.log({ privateKey, publicKey });
 
-      const { tokens, publicKey } = await createToken(newShop._id, email);
+      const { tokens } = await createToken(newShop._id, email);
 
       const keyStore = await KeyTokenService.createKeyToken({
         userId: newShop._id,
@@ -115,6 +177,7 @@ class AccessServices {
     }
 
     //step2: check password
+    //so sanh password nhap vao voi password trong db, dung bcrypt.compare voi 2 tham so la password nhap vao va foundShop.password trong db
     const matchPassword = await bcrypt.compare(password, foundShop.password);
 
     if (!matchPassword) {
@@ -128,7 +191,8 @@ class AccessServices {
     );
 
     await KeyTokenService.createKeyToken({
-      refreshToken: publicKey,
+      refreshToken: tokens.refreshToken,
+      accessToken: tokens.accessToken,
       userId: foundShop._id,
       publicKey,
       privateKey,

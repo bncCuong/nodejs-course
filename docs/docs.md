@@ -42,4 +42,26 @@
         - File config để lưu trữ các cài đặt và tùy chọn cho cấu hình
         - Kiểm soát các cài đặt ở file
 
-## 5. Create refeshTocken và 
+## 5. Create refeshTocken
+
+## 6. Login
+
+    1. User đăng nhập bằng {email, password}
+    2. Check email, password. Nếu vượt qua(có account) thì tạo 1 pairToken(refeshToken và accessToken) lưu vào Keys(database).
+        - Accesstoken thì có thời hạn, khi hết thời hạn sẽ tự động bị xoá khỏi db. Lúc này refeshToken sẽ làm nhiệm vụ tạo một accessToken và refeshToken mới cho user này mà ko cần thiết phải gọi 1 api khác để tạo accessToken. Đồng thời đưa cặp pairToken đã hết hạn này vào 1 mảng có thể gọi là tokenUsed hoặc blacklist lưu trong db(có thể xoá đi sau 1 thời gian nào đó) - để chống hacker.
+        - Khi hệ thống nhận đc request từ 1 account mà có đến 2 cặp pairToken(từ user và hacker) thì lập tức sẽ huỷ bỏ hết data reponse về cả 2 request để bảo vệ user bằng cách logout tài khoản đang đăng nhập đó ra.
+        - Sau đó user có tài khoản và password sẽ đc login lại, còn hacker thì chỉ có cặp pairToken cũ hết hạn và vô dụng
+    3. Trả về user- gồm các thông tin của user và pairToken cho clinet
+
+## 7. Logout
+
+    1.Viết 1 hàm middaleware(name: authentication()) check điều kiện trước khi logout
+        1.1: lấy userId từ client truyền xuống qua req.HEADER.CLIENTID
+        1.2: nhận keyStore thông qua userID
+        1.3: verify accsesTken bằng thư viện JWT(kiểm tra token trong db). Set req.keyStore = keyStore
+        1.4: xoá accsessToken trong db. Khi user muốn logout thì sẽ xoá hết dữ liệu trong Keys - database, không phải trong Shops
+        1.5: return next().
+    2. Ba tham số bắt buộc trên clinet phải truyền xuống:
+        2.1: x-api-key: Là key BE cung cấp cho FE để có thể truy cập vào api-key(gọi dữ liệu từ xuống BE)
+        2.2: x-client-id: Là userId của user đang đăng nhập. Được sử dụng để veryfi accessToken của user nào, có đang login hay ko
+        2.3: authentication: Là accessToken của user đang login
